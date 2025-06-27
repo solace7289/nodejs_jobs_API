@@ -1,5 +1,5 @@
 {
   "port": 6969,
-  "JWT_SECRET": ""
-
+  "JWT_SECRET": "",
+  "uri": "mongodb://127.0.0.1:27017/job_api"
 }

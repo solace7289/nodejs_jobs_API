@@ -5,6 +5,11 @@ const express = require('express')
 // require port from config file
 const { port } = require('./config.json')
 
+// require connect db
+const connectDB = require('./db/connectDB')
+
+const { uri } = require('./config.json')
+
 // require middleware
 const errorHandler = require('./middleware/error_handler')
 const notFound = require('./middleware/not-found')
@@ -31,8 +36,9 @@ app.use(errorHandler)
 app.use(notFound)
 
 // start method
-const start = () => {
+const start = async () => {
     try {
+        await connectDB(uri)
         app.listen(port, () => {
             console.log(`App is running at: http://localhost:${port}`)
         })
