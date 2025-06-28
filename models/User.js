@@ -46,13 +46,14 @@ UserSchema.methods.createToken = function() { // can not use arrow function in h
         { userId: this._id, name: this.name },
         JWT_SECRET,
         { expiresIn: '1d'}
-    ) 
+    )
 }
 
 // method to compare password
-UserSchema.methods.comparePassword = async (canidatePassword) => {
+UserSchema.methods.comparePassword = async function (canidatePassword) {
     // use bcrypt.compare 
     const isMatch = await bcrypt.compare(canidatePassword, this.password)
+    
     return isMatch
 }
 

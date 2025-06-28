@@ -3,6 +3,10 @@
 // require http status codes
 const { StatusCodes } = require('http-status-codes')
 
+// require custome error
+const { Unauthenticated, BadRequestError } = require('../errors')
+
+
 // require model User
 const User = require('../models/User')
 
@@ -24,8 +28,39 @@ const register = async (req, res) => {
     })
 }
 
-const login = (req, res) => {
-    res.status(StatusCodes.OK).send('Login success')
+const login = async (req, res) => {
+
+    // get username and password from req.body
+    const { email, password } = req.body
+
+    // validate username and password
+    if ( !email || !password ) {
+        throw new BadRequestError('Please provide email and password!') 
+    }
+    // find one by username
+    const user = await User.findOne({ email })
+    
+    // if user not exist -> throw exception
+    if (!user) {
+        throw new Unauthenticated('User not exist!')
+    }
+
+    // compare password
+    const isPasswordCorrect = await user.comparePassword(password)
+    
+    // if wrong -> send back message: login fail, wrong password
+    if ( !isPasswordCorrect ) {
+        console.log('Password is wrong')
+        throw new Unauthenticated('Wrong password')
+    } else {
+        // if true -> create token
+        const token = user.createToken()
+        
+        // send back to user
+        res.status(StatusCodes.OK).json({
+            token
+        })
+    }
 }
 
 module.exports = {
